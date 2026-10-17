@@ -87,41 +87,70 @@ public_users.get('/review/:isbn', (req, res) => {
     return res.status(200).json(book.reviews);
 });
 
-// Task 10: Four asynchronous Axios methods
-const api = axios.create({
-    baseURL: 'http://127.0.0.1:5000',
+// Tasks 10-13: Promises and Async/Await using Axios
+const BOOK_API_BASE_URL =
+    process.env.BOOK_API_BASE_URL || 'http://127.0.0.1:5000';
+
+const axiosOptions = {
     timeout: 5000,
     proxy: false
-});
+};
 
-// Async/Await: Get all books
+// Task 10: Retrieve ALL books using Async/Await
 async function getAllBooks() {
-    const response = await api.get('/');
-    return response.data;
+    try {
+        const response = await axios.get(
+            `${BOOK_API_BASE_URL}/`,
+            axiosOptions
+        );
+        return response.data;
+    } catch (error) {
+        console.error("getAllBooks failed:", error.message);
+        throw error;
+    }
 }
 
-// Promise: Get book by ISBN
+// Task 11: Retrieve book by ISBN using Promise callbacks
 function getBooksByISBN(isbn) {
-    return api.get(`/isbn/${encodeURIComponent(isbn)}`)
-        .then(response => response.data);
+    return axios.get(
+        `${BOOK_API_BASE_URL}/isbn/${encodeURIComponent(isbn)}`,
+        axiosOptions
+    )
+    .then(response => response.data)
+    .catch(error => {
+        console.error("getBooksByISBN failed:", error.message);
+        throw error;
+    });
 }
 
-// Async/Await: Get books by author
-async function getBooksByAuthor(author) {
-    const response = await api.get(
-        `/author/${encodeURIComponent(author)}`
-    );
-    return response.data;
+// Task 12: Retrieve books by author using Promise callbacks
+function getBooksByAuthor(author) {
+    return axios.get(
+        `${BOOK_API_BASE_URL}/author/${encodeURIComponent(author)}`,
+        axiosOptions
+    )
+    .then(response => response.data)
+    .catch(error => {
+        console.error("getBooksByAuthor failed:", error.message);
+        throw error;
+    });
 }
 
-// Async/Await: Get books by title
+// Task 13: Retrieve books by title using Async/Await
 async function getBooksByTitle(title) {
-    const response = await api.get(
-        `/title/${encodeURIComponent(title)}`
-    );
-    return response.data;
+    try {
+        const response = await axios.get(
+            `${BOOK_API_BASE_URL}/title/${encodeURIComponent(title)}`,
+            axiosOptions
+        );
+        return response.data;
+    } catch (error) {
+        console.error("getBooksByTitle failed:", error.message);
+        throw error;
+    }
 }
 
+// Public Express router and four Axios methods
 module.exports.general = public_users;
 module.exports.getAllBooks = getAllBooks;
 module.exports.getBooksByISBN = getBooksByISBN;
